@@ -13,6 +13,10 @@ iterations=5
 k_values=(2**10 2**11 2**12 2**13 2**14 2**15 2**16 2**17)
 threads_values=(1 2 4)
 
+# Initialize arrays to store mean and standard deviation values
+mean_array=()
+std_dev_array=()
+
 # Loop through the values for threads, k
 for threads in "${threads_values[@]}"
 do
@@ -41,9 +45,26 @@ do
         # Calculate the standard deviation
         deviation=$(for time in "${times[@]}"; do echo "$time"; done | std_dev $mean_time)
 
-        # Print the mean time and standard deviation
+        # Store mean and standard deviation values in arrays
+        mean_array+=($mean_time)
+        std_dev_array+=($deviation)
+
         echo "Mean time for threads=$threads, k=$k: $mean_time"
         echo "Standard deviation for threads=$threads, k=$k: $deviation"
         printf "\n\n"
     done
+
+    # Print the array of mean values
+    echo "Mean values for threads=$threads:"
+    echo "${mean_array[@]}"
+    printf "\n"
+
+    # Print the array of standard deviation values
+    echo "Standard deviation values for threads=$threads:"
+    echo "${std_dev_array[@]}"
+    printf "\n"
+
+    # Reset the arrays for the next combination
+    mean_array=()
+    std_dev_array=()
 done
