@@ -3,11 +3,14 @@
 # Function to calculate mean
 calc() { awk "BEGIN {print $*}"; }
 
+# Function to calculate standard deviation
+std_dev() { awk -v mean=$1 '{sum+=($0-mean)*($0-mean)} END {print sqrt(sum/NR)}'; }
+
 # Define the number of iterations
-iterations=10
+iterations=5
 
 # Define the values for threads, k (array_size)
-k_values=(2^10 2^11 2^12 2^13 2^14 2^15 2^16 2^16)
+k_values=(2**10 2**11 2**12 2**13 2**14 2**15 2**16 2**17)
 threads_values=(1 2 4)
 
 # Loop through the values for threads, k
@@ -35,8 +38,12 @@ do
         # Calculate the mean time
         mean_time=$(calc $time_sum/$iterations)
 
-        # Print the mean time
+        # Calculate the standard deviation
+        deviation=$(for time in "${times[@]}"; do echo "$time"; done | std_dev $mean_time)
+
+        # Print the mean time and standard deviation
         echo "Mean time for threads=$threads, k=$k: $mean_time"
+        echo "Standard deviation for threads=$threads, k=$k: $deviation"
         printf "\n\n"
     done
 done
